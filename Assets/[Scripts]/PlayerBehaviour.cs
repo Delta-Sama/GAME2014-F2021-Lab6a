@@ -49,9 +49,21 @@ public class PlayerBehaviour : MonoBehaviour
             worldTouch = Camera.main.ScreenToWorldPoint(touch.position);
         }
 
-        float horizontalMoveForce = xInput * horizontalForce * Time.deltaTime;
-        float verticalMoveForce = jumpInput * verticalForce * Time.deltaTime;
-        rigidBody.AddForce(new Vector2(horizontalMoveForce, verticalMoveForce));
+        Vector2 direction = (worldTouch - (Vector2)transform.position).normalized;
+
+        if (Input.touches.Length == 0)
+        {
+            float horizontalMoveForce = xInput * horizontalForce * Time.deltaTime;
+            float verticalMoveForce = jumpInput * verticalForce * Time.deltaTime;
+            rigidBody.AddForce(new Vector2(horizontalMoveForce, verticalMoveForce));
+        }
+        else
+        {
+            float horizontalMoveForce = Mathf.Sign(direction.x) * horizontalForce * Time.deltaTime;
+            float jump = (direction.y > Mathf.Sin(Mathf.PI / 4.0f) ? 1 : 0);
+            float verticalMoveForce = jump * verticalForce * Time.deltaTime;
+            rigidBody.AddForce(new Vector2(horizontalMoveForce, verticalMoveForce));
+        }
     }
 
     private void CheckIfGrounded()
